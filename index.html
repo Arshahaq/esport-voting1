@@ -4,75 +4,154 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ESPORTS VOTING BOOTH</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
 
-    body, html { height: 100%; overflow: hidden; }
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: Arial, sans-serif; 
+    }
+
+    body, html { 
+      height: 100%; 
+      overflow-x: hidden; /* allow scroll on mobile */
+    }
 
     .bg-video {
-      position: fixed; top: 0; left: 0;
+      position: fixed; 
+      top: 0; left: 0;
       width: 100%; height: 100%;
-      object-fit: cover; z-index: -2;
+      object-fit: cover; 
+      z-index: -2;
     }
 
     .overlay {
-      position: fixed; top: 0; left: 0;
+      position: fixed; 
+      top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.6);
       z-index: -1;
     }
 
     .container {
-      text-align: center; color: white; padding-top: 40px;
+      text-align: center; 
+      color: white; 
+      padding-top: 40px;
+      padding-bottom: 40px; /* for mobile */
     }
 
-    h1 { font-size: 50px; font-weight: 800; letter-spacing: 3px; }
-    h2 { margin-top: 10px; font-size: 24px; }
+    h1 { 
+      font-size: 50px; 
+      font-weight: 800; 
+      letter-spacing: 3px; 
+    }
 
+    h2 { 
+      margin-top: 10px; 
+      font-size: 24px; 
+    }
+
+    /* ----------- RESPONSIVE FIX ------------- */
     .contestants {
       margin-top: 40px;
-      display: flex; justify-content: center; gap: 20px;
+      display: flex; 
+      justify-content: center; 
+      gap: 20px;
+      flex-wrap: wrap;        /* WRAP for mobile */
+      padding: 0 15px;
     }
 
     .box {
       background: rgba(255,255,255,0.15);
-      padding: 20px; width: 220px; border-radius: 15px;
+      padding: 20px; 
+      width: 220px; 
+      border-radius: 15px;
       backdrop-filter: blur(5px);
-      cursor: pointer; transition: 0.3s;
+      cursor: pointer; 
+      transition: 0.3s;
     }
 
     .box:hover { transform: scale(1.05); }
 
     .box img {
-      width: 100%; height: 180px;
-      border-radius: 10px; object-fit: cover; margin-bottom: 10px;
+      width: 100%; 
+      height: 180px;
+      border-radius: 10px; 
+      object-fit: cover; 
+      margin-bottom: 10px;
     }
 
     .votes {
       margin-top: 8px;
-      font-size: 20px; font-weight: bold; color: #00ffea;
+      font-size: 20px; 
+      font-weight: bold; 
+      color: #00ffea;
     }
 
     button {
-      margin-top: 30px; padding: 12px 30px; font-size: 20px;
-      border: none; background: #00eaff; color: black;
-      border-radius: 10px; cursor: pointer; font-weight: bold;
+      margin-top: 30px; 
+      padding: 12px 30px; 
+      font-size: 20px;
+      border: none; 
+      background: #00eaff; 
+      color: black;
+      border-radius: 10px; 
+      cursor: pointer; 
+      font-weight: bold;
       transition: 0.3s;
     }
 
     button:hover { background: #00bcd1; }
 
     .popup {
-      position: fixed; top: 20px; left: 50%;
+      position: fixed; 
+      top: 20px; 
+      left: 50%;
       transform: translateX(-50%);
-      background: #00ff88; padding: 15px 25px; border-radius: 8px;
-      color: black; font-size: 20px; display: none;
-      font-weight: bold; box-shadow: 0 0 10px black;
+      background: #00ff88; 
+      padding: 15px 25px; 
+      border-radius: 8px;
+      color: black; 
+      font-size: 20px; 
+      display: none;
+      font-weight: bold; 
+      box-shadow: 0 0 10px black;
+      z-index: 999;
     }
 
     .selected { border: 3px solid #00ffea; }
+
+    /* ---------- MOBILE RESPONSIVE ----------------- */
+    @media (max-width: 900px) {
+      h1 { font-size: 38px; }
+      h2 { font-size: 20px; }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 32px; }
+      h2 { font-size: 18px; }
+
+      .box {
+        width: 100%;  /* full width on small screens */
+      }
+
+      .box img {
+        height: 150px;
+      }
+
+      button {
+        width: 90%;
+        font-size: 18px;
+      }
+
+      body, html {
+        overflow-y: auto; /* allow scrolling */
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Background Video -->
@@ -88,7 +167,7 @@
     <h1>ESPORTS VOTING BOOTH</h1>
     <h2>Vote your champ now</h2>
 
-    <div class="contestants" id="contest">
+    <div class="contestants">
 
       <div class="box" onclick="selectContestant(1)">
         <img src="c1.jpg">
@@ -119,17 +198,11 @@
     <button onclick="submitVote()">VOTE</button>
   </div>
 
-  <script>
+<script>
   let selected = null;
   let hasVoted = localStorage.getItem("hasVoted") === "true";
 
-  // Load saved votes from localStorage on page load
-  const defaultVotes = {
-    1: 9369,
-    2: 3839,
-    3: 1920,
-    4: 788
-  };
+  const defaultVotes = { 1: 9369, 2: 3839, 3: 1920, 4: 788 };
 
   function loadVotes() {
     for (let i = 1; i <= 4; i++) {
@@ -138,14 +211,13 @@
     }
   }
 
-  loadVotes(); // call it on startup
+  loadVotes();
 
   function selectContestant(num) {
     if (hasVoted) {
       alert("You already voted! Only 1 vote allowed.");
       return;
     }
-    
     selected = num;
     document.querySelectorAll(".box").forEach(b => b.classList.remove("selected"));
     document.querySelectorAll(".box")[num - 1].classList.add("selected");
@@ -156,32 +228,25 @@
       alert("You already voted! Only 1 vote allowed.");
       return;
     }
-
     if (!selected) {
       alert("Please select a contestant before voting!");
       return;
     }
 
-    // Increase and save vote
-    let voteBox = document.getElementById("v" + selected);
-    let newVotes = parseInt(voteBox.innerText) + 1;
-    voteBox.innerText = newVotes;
+    let box = document.getElementById("v" + selected);
+    let newVotes = parseInt(box.innerText) + 1;
+    box.innerText = newVotes;
 
-    // Store updated vote count
     localStorage.setItem("vote_" + selected, newVotes);
-
-    // Lock voting forever
     hasVoted = true;
     localStorage.setItem("hasVoted", "true");
 
-    // Popup
     const popup = document.getElementById("popup");
-    popup.innerText = "VOTED!";
+    popup.textContent = "VOTED!";
     popup.style.display = "block";
     setTimeout(() => popup.style.display = "none", 2000);
   }
 </script>
-
 
 </body>
 </html>
